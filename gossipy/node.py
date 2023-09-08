@@ -768,7 +768,6 @@ class PENSNode(GossipNode):
             # Byzantine Node
             if evaluation is None:
                 evaluation = CACHE[recv_model].evaluation
-                print(f"Byzantine Node {sender} with evaluation {evaluation}")
             # TODO: move performance metric as a parameter of the node
             self.cache[sender] = (recv_model, -evaluation["accuracy"]) # keep the last model for the peer 'sender'
 
