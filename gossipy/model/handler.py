@@ -193,7 +193,10 @@ class TorchModelHandler(ModelHandler):
                  batch_size: int = 32,
                  create_model_mode: CreateModelMode = CreateModelMode.MERGE_UPDATE,
                  copy_model=True,
-                 on_device=False):
+                 on_device=False,
+                 b_nodes = 0,
+                 aggregator = "fedavg",
+                 to_keep = 1):
         """Handler for torch models.
 
         This handler is responsible for the training and evaluation of a pytorch model. Thus it
@@ -221,6 +224,12 @@ class TorchModelHandler(ModelHandler):
             Whether to use a copy of the model (i.e., ``net``) or not.
         on_device : bool, default=False
             Wether GPU is used for calculus. CPU is used when this parameter is set to True but there is no CUDA GPU.
+        b_nodes: int, default=0
+            number of malicious nodes in the network (for krum).
+        aggregator: str, default="fedavg"
+            the aggregation method to be used.
+        to_keep: int, default=1
+            how many clients to perform Multi-Krum aggregation.
         """
 
         super(TorchModelHandler, self).__init__(create_model_mode)
@@ -230,12 +239,15 @@ class TorchModelHandler(ModelHandler):
         assert (batch_size == 0 and local_epochs > 0) or (batch_size > 0)
         self.local_epochs = local_epochs
         self.batch_size = batch_size
+        self.aggregator = aggregator
+        self.to_keep = to_keep
         if on_device:
             self.device = torch.device(
                 "cuda" if torch.cuda.is_available() else "cpu")
             self.model = self.model.to(self.device)
         else:
             self.device = "cpu"
+        self.b_nodes =  b_nodes
 
     def init(self) -> None:
         self.model.init_weights()
@@ -277,17 +289,55 @@ class TorchModelHandler(ModelHandler):
                              for omh in other_model_handler]
             n_up = max([omh.n_updates for omh in other_model_handler])
 
-        # Perform the average overall models including its weights
-        # CHECK: whether to allow the merging of the other models before the averaging
+        # Perform the average overall models including its weights, simple FedAvg
+        if self.aggregator == "fedavg":
+            self._fedavg(dict_params1, dicts_params2)
+        # Multi-krum aggregation
+        elif self.aggregator == "multi-krum":
+            # Get the distance vector, in this case we do not have the server, so each node acts like a server for itself.
+            distance_vector = self._compute_distances(dict_params1, dicts_params2)
+            print("distance vector: ", distance_vector)
+            # For each client take the n-f-2 closest clients (n in our case is the m_sampled)
+            num_closest = max(1, len(dicts_params2) - self.b_nodes - 2)
+            print("num_closest: ", num_closest)
+            closest_indices = np.argsort(distance_vector)[:num_closest + 1]
+            print("closest_indices: ", closest_indices)
+            # Compute the score for each client, that is the sum of the distances
+            # of the n-f-2 closest parameters vectors
+            scores = np.sum(distance_vector[closest_indices])
+            print("scores: ", scores)
+            if self.to_keep < 1:
+                print("to_keep must be greater than 1, setting it to 1")
+                self.to_keep = 1
+            # After that we perform Multi-Krum
+            best_indices = np.argsort(scores)[len(scores) - self.to_keep:]
+            best_results = [dicts_params2[i] for i in best_indices]
+            print("best_results: ", best_results)
+            self._fedavg(dict_params1, best_results)
+        else:
+            raise ValueError("Unknown aggregator %s" % str(self.aggregator))
+
+        self.model.load_state_dict(dict_params1)
+        # Gets the maximum number of updates from the merged models
+        self.n_updates = max(self.n_updates, n_up)
+
+    def _compute_distances(self, dict_params1, dicts_params2):
+        # Compute the euclidean squared distance between the parameters of the models
+        distance_vector = np.zeros(len(dicts_params2))
+        params_1 = dict_params1.parameters()
+        print(params_1)
+        params_2 = [dict_params2.parameters() for dict_params2 in dicts_params2]
+        for j, param_2 in enumerate(params_2):
+            distance_vector[j] += torch.cdist(params_1, param_2, p=2)
+        return distance_vector
+
+    def _fedavg(self, dict_params1, dicts_params2):
+        # Perform the average overall models including its weights, simple FedAvg
         div = len(dicts_params2) + 1
         for key in dict_params1:
             for dict_params2 in dicts_params2:
                 dict_params1[key] += dict_params2[key]
             dict_params1[key] /= div
-
-        self.model.load_state_dict(dict_params1)
-        # Gets the maximum number of updates from the merged models
-        self.n_updates = max(self.n_updates, n_up)
 
     def evaluate(self,
                  data: Tuple[torch.Tensor, torch.Tensor]) -> Dict[str, int]:
