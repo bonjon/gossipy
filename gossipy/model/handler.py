@@ -314,9 +314,7 @@ class TorchModelHandler(ModelHandler):
             best_indices = closest_indices[:self.to_keep]
             print("best_indices: ", best_indices)
             print(len(dicts_params2))
-            print(dicts_params2)
             best_results = [dicts_params2[i] for i in best_indices]
-            print("best_results: ", best_results)
             dict_params1 = self._fedavg(dict_params1, best_results)
         else:
             raise ValueError("Unknown aggregator %s" % str(self.aggregator))
