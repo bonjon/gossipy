@@ -248,6 +248,12 @@ class TorchModelHandler(ModelHandler):
         else:
             self.device = "cpu"
         self.b_nodes =  b_nodes
+    
+    def set_krum(self, b_nodes, aggregator, to_keep):
+        # Set KRUM for colab...
+        self.b_nodes = b_nodes
+        self.aggregator = aggregator
+        self.to_keep = to_keep
 
     def init(self) -> None:
         self.model.init_weights()
