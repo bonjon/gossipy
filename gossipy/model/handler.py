@@ -330,11 +330,10 @@ class TorchModelHandler(ModelHandler):
     def _compute_distances(self, dict_params1, dicts_params2):
         # Compute the euclidean squared distance between the parameters of the models
         distance_vector = np.zeros(len(dicts_params2))
-        params_1 = dict_params1.parameters()
-        print(params_1)
-        params_2 = [dict_params2.parameters() for dict_params2 in dicts_params2]
-        for j, param_2 in enumerate(params_2):
-            distance_vector[j] += torch.cdist(params_1, param_2, p=2)
+        # For each layer compute the distance
+        for key in dict_params1:
+            for j, dict_params2 in enumerate(dicts_params2):
+                distance_vector[j] += torch.dist(dict_params1[key], dict_params2[key], p=2)
         return distance_vector
 
     def _fedavg(self, dict_params1, dicts_params2):
