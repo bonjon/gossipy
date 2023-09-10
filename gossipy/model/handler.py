@@ -297,7 +297,7 @@ class TorchModelHandler(ModelHandler):
 
         # Perform the average overall models including its weights, simple FedAvg
         if self.aggregator == "fedavg":
-            self._fedavg(dict_params1, dicts_params2)
+            dict_params1 = self._fedavg(dict_params1, dicts_params2)
         # Multi-krum aggregation
         elif self.aggregator == "multi-krum":
             # Get the distance vector, in this case we do not have the server, so each node acts like a server for itself.
@@ -317,7 +317,7 @@ class TorchModelHandler(ModelHandler):
             best_indices = closest_indices[:self.to_keep]
             best_results = [dicts_params2[i] for i in best_indices]
             print("best_results: ", best_results)
-            self._fedavg(dict_params1, best_results)
+            dict_params1 = self._fedavg(dict_params1, best_results)
         else:
             raise ValueError("Unknown aggregator %s" % str(self.aggregator))
 
@@ -341,6 +341,7 @@ class TorchModelHandler(ModelHandler):
             for dict_params2 in dicts_params2:
                 dict_params1[key] += dict_params2[key]
             dict_params1[key] /= div
+        return dict_params1
 
     def evaluate(self,
                  data: Tuple[torch.Tensor, torch.Tensor]) -> Dict[str, int]:
