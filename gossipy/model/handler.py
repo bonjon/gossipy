@@ -302,18 +302,13 @@ class TorchModelHandler(ModelHandler):
         elif self.aggregator == "multi-krum":
             # Get the distance vector, in this case we do not have the server, so each node acts like a server for itself.
             distance_vector = self._compute_distances(dict_params1, dicts_params2)
-            print("distance vector: ", distance_vector)
             # For each client take the n-f-2 closest clients (n in our case is the m_sampled)
             num_closest = max(1, len(dicts_params2) - self.b_nodes - 2)
-            print("num_closest: ", num_closest)
             closest_indices = np.argsort(distance_vector)[:num_closest + 1]
-            print("closest_indices: ", closest_indices)
             # The score is not needed, because each client has only one score, which is the sum with the neighbors.
             # We select directly to_keep clients from the dict_params2.
             # After that we perform Multi-Krum, we select the one that minimize the distance.
             best_indices = closest_indices[:self.to_keep]
-            print("best_indices: ", best_indices)
-            print(len(dicts_params2))
             best_results = [dicts_params2[i] for i in best_indices]
             dict_params1 = self._fedavg(dict_params1, best_results)
         else:
