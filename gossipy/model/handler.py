@@ -308,15 +308,13 @@ class TorchModelHandler(ModelHandler):
             print("num_closest: ", num_closest)
             closest_indices = np.argsort(distance_vector)[:num_closest + 1]
             print("closest_indices: ", closest_indices)
-            # Compute the score for each client, that is the sum of the distances
-            # of the n-f-2 closest parameters vectors
-            scores = np.sum(distance_vector[closest_indices])
-            print("scores: ", scores)
+            # The score is not needed, because each client has only one score, which is the sum with the neighbors.
+            # We select directly to_keep clients from the dict_params2.
             if self.to_keep < 1:
                 print("to_keep must be greater than 1, setting it to 1")
                 self.to_keep = 1
-            # After that we perform Multi-Krum
-            best_indices = np.argsort(scores)[len(scores) - self.to_keep:]
+            # After that we perform Multi-Krum, we select the one that minimize the distance.
+            best_indices = closest_indices[:self.to_keep]
             best_results = [dicts_params2[i] for i in best_indices]
             print("best_results: ", best_results)
             self._fedavg(dict_params1, best_results)
