@@ -781,7 +781,10 @@ class PENSNode(GossipNode):
                     self.neigh_counter[i] += 1
         else:
             # We are in step 2, so we must have a list of best nodes and take their models
-            print(self.best_nodes)
-            recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
+            recv_model = []
+            for k in self.best_nodes:
+                if k in self.cache:
+                    recv_model.append(CACHE.pop(self.cache[k][0]))
+            #recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
             #recv_model = CACHE.pop(recv_model)
             self.model_handler(recv_model, self.data[0])
