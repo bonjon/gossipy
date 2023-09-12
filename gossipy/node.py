@@ -725,7 +725,7 @@ class PENSNode(GossipNode):
         for i, cnt in self.neigh_counter.items():
             if cnt > self.selected[i] * (self.m_top / self.n_sampled):
                 self.best_nodes.append(i)
-    
+
     # docstr-coverage:inherited
     def timed_out(self, t: int) -> int:
         if self.step == 1 and (t // self.round_len) >= self.step1_rounds:
@@ -752,8 +752,6 @@ class PENSNode(GossipNode):
         if protocol != AntiEntropyProtocol.PUSH:
             LOG.warning("PENSNode only supports PUSH protocol.")
 
-        print("{} Peer {}".format(self.idx,peer))
-
         key = self.model_handler.caching(self.idx)
         return Message(t, self.idx, peer, MessageType.PUSH, (key,))
         
@@ -762,7 +760,6 @@ class PENSNode(GossipNode):
         msg_type: MessageType
         recv_model: Any 
         sender, msg_type, recv_model = msg.sender, msg.type, msg.value[0]
-        print("{} Received {} from {}".format(self.idx,recv_model,sender))
         if msg_type != MessageType.PUSH:
             LOG.warning("PENSNode only supports PUSH protocol.")
 
@@ -782,9 +779,5 @@ class PENSNode(GossipNode):
                 for i in top_m:
                     self.neigh_counter[i] += 1
         else:
-            # Save in cache the best nodes
-            self.cache[sender] = (recv_model, -CACHE[recv_model].evaluate(self.data[0])["accuracy"])
-            print("{} CACHe {}".format(self.idx,self.cache))
-            print("{} Best {}".format(self.idx,self.best_nodes))
-            recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
+            recv_model = CACHE.pop()
             self.model_handler(recv_model, self.data[0])
