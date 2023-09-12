@@ -734,7 +734,6 @@ class PENSNode(GossipNode):
         return super().timed_out(t)
     
     def get_pens_peer(self) -> int:
-        print("{} step: {}".format(self.idx, self.step))
         if self.step == 1 or not self.best_nodes:
             peer = super().get_peer()
             if self.step == 1:
@@ -744,8 +743,7 @@ class PENSNode(GossipNode):
             print("{} Seleziono un best node".format(self.idx))
             return random.choice(self.best_nodes)
 
-    # docstr-coverage:inherited
-    def send(self,
+    def send2(self,
              t: int,
              peer: int,
              protocol: AntiEntropyProtocol) -> Union[Message, None]:
