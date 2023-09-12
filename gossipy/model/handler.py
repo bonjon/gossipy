@@ -224,6 +224,7 @@ class TorchModelHandler(ModelHandler):
             Whether to use a copy of the model (i.e., ``net``) or not.
         on_device : bool, default=False
             Wether GPU is used for calculus. CPU is used when this parameter is set to True but there is no CUDA GPU.
+        # Giovanni Pica, these 3 parameters are used for Multi-Krum aggregation
         b_nodes: int, default=0
             number of malicious nodes in the network (for krum).
         aggregator: str, default="fedavg"
@@ -311,6 +312,12 @@ class TorchModelHandler(ModelHandler):
             best_indices = closest_indices[:self.to_keep]
             best_results = [dicts_params2[i] for i in best_indices]
             dict_params1 = self._fedavg(dict_params1, best_results)
+        elif self.aggregator == "median":
+            # compute median weight for each layer of dict_params1 and dicts_params2
+            for layer in dict_params1:
+                # compute median for each layer
+                median = torch.median(torch.stack([dict_params1[layer]] + [dicts_params2[i][layer] for i in range(len(dicts_params2))]), dim=0)[0]
+                dict_params1[layer] = median
         else:
             raise ValueError("Unknown aggregator %s" % str(self.aggregator))
 
