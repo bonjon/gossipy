@@ -781,5 +781,6 @@ class PENSNode(GossipNode):
         else:
             # We are in step 2, so we must have a list of best nodes and take their models
             print("{} CACHe {}".format(self.idx,self.cache))
+            print("{} Best {}".format(self.idx,self.best_nodes))
             recv_model = CACHE.pop(recv_model)
             self.model_handler(recv_model, self.data[0])
