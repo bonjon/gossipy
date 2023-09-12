@@ -735,11 +735,14 @@ class PENSNode(GossipNode):
     
     # docstr-coverage:inherited
     def get_peer(self) -> int:
+        print("step: ", self.step)
         if self.step == 1 or not self.best_nodes:
             peer = super().get_peer()
             if self.step == 1:
                 self.selected[peer] += 1
             return peer
+        else:
+            print("Seleziono un best node")
 
         return random.choice(self.best_nodes)
 
@@ -781,10 +784,7 @@ class PENSNode(GossipNode):
                     self.neigh_counter[i] += 1
         else:
             # We are in step 2, so we must have a list of best nodes and take their models
-            recv_model = []
-            for k in self.best_nodes:
-                if k in self.cache:
-                    recv_model.append(CACHE.pop(self.cache[k][0]))
-            #recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
-            #recv_model = CACHE.pop(recv_model)
+            print("best nodes: ", self.best_nodes)
+            print("recv model: ", recv_model)
+            recv_model = CACHE.pop(recv_model)
             self.model_handler(recv_model, self.data[0])
