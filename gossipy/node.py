@@ -780,7 +780,12 @@ class PENSNode(GossipNode):
                     self.neigh_counter[i] += 1
         else:
             # We are in step 2, so we must have a list of best nodes and take their models
+            evaluation = CACHE[recv_model].evaluate(self.data[0])
+            # Byzantine Node
+            if evaluation is None:
+                evaluation = CACHE[recv_model].evaluation
+            self.cache[sender] = (recv_model, -evaluation["accuracy"]) # keep the last model for the peer 'sender'
             print("{} CACHe {}".format(self.idx,self.cache))
             print("{} Best {}".format(self.idx,self.best_nodes))
-            recv_model = CACHE.pop(recv_model)
+            recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
             self.model_handler(recv_model, self.data[0])

@@ -395,7 +395,6 @@ class GossipSimulator(SimulationEventSender):
 
                         peer = node.get_peer()
                         msg = node.send(t, peer, self.protocol)
-                        print(msg)
                         self.notify_message(False, msg)
                         if msg:
                             if random() >= self.drop_prob:
