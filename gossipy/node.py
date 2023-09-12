@@ -782,6 +782,8 @@ class PENSNode(GossipNode):
                 for i in top_m:
                     self.neigh_counter[i] += 1
         else:
+            # Save in cache the best nodes
+            self.cache[sender] = (recv_model, -CACHE[recv_model].evaluate(self.data[0])["accuracy"])
             print("{} CACHe {}".format(self.idx,self.cache))
             print("{} Best {}".format(self.idx,self.best_nodes))
             recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
