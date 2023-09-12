@@ -779,5 +779,5 @@ class PENSNode(GossipNode):
                 for i in top_m:
                     self.neigh_counter[i] += 1
         else:
-            recv_model = CACHE.pop()
+            recv_model = CACHE.pop(recv_model)
             self.model_handler(recv_model, self.data[0])
