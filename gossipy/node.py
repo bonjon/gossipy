@@ -733,8 +733,7 @@ class PENSNode(GossipNode):
             self._select_neighbors()
         return super().timed_out(t)
     
-    # docstr-coverage:inherited
-    def get_peer(self) -> int:
+    def get_pens_peer(self) -> int:
         print("{} step: {}".format(self.idx, self.step))
         if self.step == 1 or not self.best_nodes:
             peer = super().get_peer()
