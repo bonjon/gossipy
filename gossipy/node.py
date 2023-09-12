@@ -752,6 +752,8 @@ class PENSNode(GossipNode):
         if protocol != AntiEntropyProtocol.PUSH:
             LOG.warning("PENSNode only supports PUSH protocol.")
 
+        print("{} Peer {}".format(self.idx,peer))
+
         key = self.model_handler.caching(self.idx)
         return Message(t, self.idx, peer, MessageType.PUSH, (key,))
         
@@ -760,6 +762,7 @@ class PENSNode(GossipNode):
         msg_type: MessageType
         recv_model: Any 
         sender, msg_type, recv_model = msg.sender, msg.type, msg.value[0]
+        print("{} Received {} from {}".format(self.idx,recv_model,sender))
         if msg_type != MessageType.PUSH:
             LOG.warning("PENSNode only supports PUSH protocol.")
 
@@ -779,12 +782,6 @@ class PENSNode(GossipNode):
                 for i in top_m:
                     self.neigh_counter[i] += 1
         else:
-            # We are in step 2, so we must have a list of best nodes and take their models
-            evaluation = CACHE[recv_model].evaluate(self.data[0])
-            # Byzantine Node
-            if evaluation is None:
-                evaluation = CACHE[recv_model].evaluation
-            self.cache[sender] = (recv_model, -evaluation["accuracy"]) # keep the last model for the peer 'sender'
             print("{} CACHe {}".format(self.idx,self.cache))
             print("{} Best {}".format(self.idx,self.best_nodes))
             recv_model = [CACHE.pop(self.cache[k][0]) for k in self.best_nodes]
