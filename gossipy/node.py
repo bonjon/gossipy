@@ -733,17 +733,19 @@ class PENSNode(GossipNode):
             self._select_neighbors()
         return super().timed_out(t)
     
-    def get_pens_peer(self) -> int:
+    # docstr-coverage:inherited
+    def get_peer(self) -> int:
         if self.step == 1 or not self.best_nodes:
             peer = super().get_peer()
             if self.step == 1:
                 self.selected[peer] += 1
             return peer
-        else:
-            print("{} Seleziono un best node".format(self.idx))
-            return random.choice(self.best_nodes)
+    
+    def get_selected_peer(self) -> int:
+        return random.choice(self.best_nodes)
 
-    def send2(self,
+    # docstr-coverage:inherited
+    def send(self,
              t: int,
              peer: int,
              protocol: AntiEntropyProtocol) -> Union[Message, None]:
@@ -780,6 +782,6 @@ class PENSNode(GossipNode):
         else:
             # We are in step 2, so we must have a list of best nodes and take their models
             print("{} best nodes: {}".format(self.idx, self.best_nodes))
-            print("{} recv model: {}".format(self.idx, recv_model))
+            print("{} recv model: {}".format(self.idx,recv_model))
             recv_model = CACHE.pop(recv_model)
             self.model_handler(recv_model, self.data[0])
