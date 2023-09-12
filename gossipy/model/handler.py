@@ -255,6 +255,10 @@ class TorchModelHandler(ModelHandler):
         self.b_nodes = b_nodes
         self.aggregator = aggregator
         self.to_keep = to_keep
+    
+    def set_median(self, aggregator):
+        # Set median for colab...
+        self.aggregator = aggregator
 
     def init(self) -> None:
         self.model.init_weights()
