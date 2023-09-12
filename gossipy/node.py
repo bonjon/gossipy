@@ -740,8 +740,7 @@ class PENSNode(GossipNode):
             if self.step == 1:
                 self.selected[peer] += 1
             return peer
-    
-    def get_selected_peer(self) -> int:
+
         return random.choice(self.best_nodes)
 
     # docstr-coverage:inherited
@@ -774,6 +773,7 @@ class PENSNode(GossipNode):
 
             if len(self.cache) >= self.n_sampled:
                 top_m = sorted(self.cache, key=lambda key: self.cache[key][1])[:self.m_top]
+                print(top_m)
                 recv_models = [CACHE.pop(self.cache[k][0]) for k in top_m]
                 self.model_handler(recv_models, self.data[0])
                 self.cache = {} # reset the cache
@@ -781,7 +781,5 @@ class PENSNode(GossipNode):
                     self.neigh_counter[i] += 1
         else:
             # We are in step 2, so we must have a list of best nodes and take their models
-            print("{} best nodes: {}".format(self.idx, self.best_nodes))
-            print("{} recv model: {}".format(self.idx,recv_model))
             recv_model = CACHE.pop(recv_model)
             self.model_handler(recv_model, self.data[0])
