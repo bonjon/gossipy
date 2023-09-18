@@ -552,8 +552,11 @@ def get_FashionMNIST(path: str = "./data",
                                                  train=False,
                                                  download=download)
     if as_tensor:
-        train_set = train_set.data / 255., train_set.targets
-        test_set = test_set.data / 255., test_set.targets
+        # to be reshaped as MNIST
+        train_set = train_set.data.reshape(
+            (60000, 28*28)) / 255., train_set.targets
+        test_set = test_set.data.reshape(
+            (10000, 28*28)) / 255., test_set.targets
     else:
         train_set = train_set.data.numpy() / 255., train_set.targets.numpy()
         test_set = test_set.data.numpy() / 255., test_set.targets.numpy()
