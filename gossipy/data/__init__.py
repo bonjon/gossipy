@@ -545,20 +545,24 @@ def get_FashionMNIST(path: str = "./data",
     """
 
     download = not Path(os.path.join(path, "/FashionMNIST/raw/")).is_dir()
+    transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
+                                                torchvision.transforms.Normalize((0.5,), (0.5,),)])
+    
     train_set = torchvision.datasets.FashionMNIST(root=path,
                                                   train=True,
-                                                  download=download)
+                                                  download=download,
+                                                  transform=transform)
     test_set = torchvision.datasets.FashionMNIST(root=path,
                                                  train=False,
-                                                 download=download)
-    if as_tensor:
-        print(train_set.data.shape)
-        # permute to have channels first
+                                                 download=download,
+                                                 transform=transform)
+    """if as_tensor:
         train_set = train_set.data / 255., train_set.targets
+        print(train_set[0].shape)
         test_set = test_set.data / 255., test_set.targets
     else:
         train_set = train_set.data.numpy() / 255., train_set.targets.numpy()
-        test_set = test_set.data.numpy() / 255., test_set.targets.numpy()
+        test_set = test_set.data.numpy() / 255., test_set.targets.numpy()"""
 
     return train_set, test_set
 
