@@ -552,13 +552,13 @@ def get_FashionMNIST(path: str = "./data",
                                                  train=False,
                                                  download=download)
     if as_tensor:
-        train_set = train_set.data / 255., train_set.targets
-        print(train_set[0].shape)
-        test_set = test_set.data / 255., test_set.targets
-        print(test_set[0].shape)
+        train_set = tensor(train_set.data).float() / 255.,\
+            tensor(train_set.targets)
+        test_set = tensor(test_set.data).float() / 255.,\
+            tensor(test_set.targets)
     else:
-        train_set = train_set.data.numpy() / 255., train_set.targets.numpy()
-        test_set = test_set.data.numpy() / 255., test_set.targets.numpy()
+        train_set = train_set.data, train_set.targets
+        test_set = test_set.data, test_set.targets
 
     return train_set, test_set
 
