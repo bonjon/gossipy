@@ -521,7 +521,8 @@ def get_CIFAR10(path: str = "./data",
 
 
 def get_FashionMNIST(path: str = "./data",
-                     as_tensor: bool = True) -> Union[Tuple[Tuple[np.ndarray, list], Tuple[np.ndarray, list]],
+                     as_tensor: bool = True,
+                     cnn=True) -> Union[Tuple[Tuple[np.ndarray, list], Tuple[np.ndarray, list]],
                                                       Tuple[Tuple[Tensor, Tensor], Tuple[Tensor, Tensor]]]:
     """Returns the FashionMNIST dataset.
 
@@ -535,7 +536,9 @@ def get_FashionMNIST(path: str = "./data",
         If True, the dataset is returned as a tuple of pytorch tensors.
         Otherwise, the dataset is returned as a tuple of numpy arrays.
         By default, True.
-
+    cnn : bool, default=True
+        If True, the dataset is returned as a tuple of pytorch tensors,
+        but is added the channel dimension.
     Returns
     -------
     Tuple[Tuple[np.ndarray, list], Tuple[np.ndarray, list]
@@ -551,14 +554,20 @@ def get_FashionMNIST(path: str = "./data",
     test_set = torchvision.datasets.FashionMNIST(root=path,
                                                  train=False,
                                                  download=download)
-    if as_tensor:
-        train_set = tensor(train_set.data).float() / 255.,\
-            tensor(train_set.targets)
-        test_set = tensor(test_set.data).float() / 255.,\
-            tensor(test_set.targets)
+    
+    if cnn and as_tensor:
+        train_set = torch.unsqueeze(train_set.data,dim=-1).permute(0, 3, 1, 2) / 255., train_set.targets
+        test_set = torch.unsqueeze(test_set.data,dim=-1).permute(0, 3, 1, 2) / 255., test_set.targets
+    
+    elif as_tensor and not cnn:
+        train_set = train_set.data.reshape(
+            (60000, 28*28)) / 255., train_set.targets
+        test_set = test_set.data.reshape(
+            (10000, 28*28)) / 255., test_set.targets
+    
     else:
-        train_set = train_set.data, train_set.targets
-        test_set = test_set.data, test_set.targets
+        train_set = train_set.data.numpy() / 255., train_set.targets.numpy()
+        test_set = test_set.data.numpy() / 255., test_set.targets.numpy()
 
     return train_set, test_set
 
