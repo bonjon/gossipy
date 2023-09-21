@@ -283,6 +283,8 @@ class TorchModelHandler(ModelHandler):
 
     def _local_step(self, x: torch.Tensor, y: torch.Tensor) -> None:
         self.model.train()
+        # permute to have the channels first
+        x = x.permute(1, 0, 2, 3)
         y_pred = self.model(x)
         loss = self.criterion(y_pred, y)
         self.optimizer.zero_grad()
