@@ -560,8 +560,10 @@ def get_FashionMNIST(path: str = "./data",
         test_set = torch.unsqueeze(test_set.data,dim=-1).permute(0, 3, 1, 2) / 255., test_set.targets
     
     elif as_tensor and not cnn:
-        train_set = train_set.data / 255., train_set.targets
-        test_set = test_set.data / 255., test_set.targets
+        train_set = tensor(train_set.data).float() / 255.,\
+            tensor(train_set.targets)
+        test_set = tensor(test_set.data).float() / 255.,\
+            tensor(test_set.targets)
         """train_set = train_set.data.reshape(
             (60000, 28*28)) / 255., train_set.targets
         test_set = test_set.data.reshape(
