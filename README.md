@@ -18,6 +18,11 @@
 ![version] ![issues]
 [![GitHub latest commit](https://img.shields.io/github/last-commit/makgyver/gossipy?style=for-the-badge)](https://github.com/makgyver/gossipy/commit/)
 
+# My Contribution
+In this repository there are some implementations.
+- Implementation of Krum and Median on gossipy/model/handler.py
+- Modified PENS node to work with byzantine handler.
+- PENS.ipynb is the notebook where there are all the experiments and the attacks.
 
 # gossipy 
 Python module for simulating gossip learning and decentralized federated learning.
