@@ -19,7 +19,7 @@
 [![GitHub latest commit](https://img.shields.io/github/last-commit/makgyver/gossipy?style=for-the-badge)](https://github.com/makgyver/gossipy/commit/)
 
 # My Contribution
-In this repository, there are some implementations.
+In this forked repository, there are some modifications.
 - Implementation of Krum and Median on gossipy/model/handler.py
 - Modified PENS node to work with byzantine handler.
 - PENS.ipynb is the notebook with all the experiments and the attacks.
