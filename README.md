@@ -19,10 +19,23 @@
 [![GitHub latest commit](https://img.shields.io/github/last-commit/makgyver/gossipy?style=for-the-badge)](https://github.com/makgyver/gossipy/commit/)
 
 # My Contribution
-In this repository there are some implementations.
+In this repository, there are some implementations.
 - Implementation of Krum and Median on gossipy/model/handler.py
 - Modified PENS node to work with byzantine handler.
-- PENS.ipynb is the notebook where there are all the experiments and the attacks.
+- PENS.ipynb is the notebook with all the experiments and the attacks.
+
+In particular, the jupyter notebook is the file that contains all the stuff related to my master's thesis. The thesis title is "Evaluating the Resilience of Decentralized Federated Learning to Model Poisoning Attacks", and it is an experimental study of PENS when there are particular model poisoning attacks. These attacks are:
+- Gaussian Attack [Fang et. al. (2021)](http://arxiv.org/abs/1911.11815).
+- LIE Attack [Baruch et. al. (2019)](https://proceedings.neurips.cc/paper/2019/hash/ec1c59141046cd1866bbbcdfb6ae31d4-Abstract.html).
+- Fall of Empires Attack [Xie et. al. (2019)](http://arxiv.org/abs/1903.03936).
+
+We provide experiments on three different datasets: 
+- MNIST.
+- Fashion-Mnist.
+- Spambase.
+
+Below, there are all the stuff related to the gossipy environment, which https://github.com/makgyver creates.
+
 
 # gossipy 
 Python module for simulating gossip learning and decentralized federated learning.
